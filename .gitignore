@@ -23,3 +23,6 @@ Thumbs.db
 
 # VS Code
 .vscode/
+
+# Cybersecurity raw dataset
+cyber_threat_detection/data/raw/
