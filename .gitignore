@@ -26,3 +26,18 @@ Thumbs.db
 
 # Cybersecurity raw dataset
 cyber_threat_detection/data/raw/
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+
+# Data
+data/raw/
+data/processed/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Models
+models/*.pkl
