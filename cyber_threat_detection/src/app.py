@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import plotly.graph_objects as go
 
-from prediction import predict_network_flow
+from prediction import predict_network_flow, load_model
 
 
 # ---------------------------------------------------------
@@ -50,10 +50,73 @@ if uploaded_file is not None:
 
     try:
 
+        
         data = pd.read_csv(uploaded_file)
+
+        # Load model configuration to obtain the required features.
+        _, model_config = load_model()
+
+        required_features = model_config["features"]
 
         st.subheader("📄 Uploaded Data")
 
+        # -------------------------------------------------
+        # Input validation
+        # -------------------------------------------------
+
+        missing_features = [
+            feature
+            for feature in required_features
+            if feature not in data.columns
+        ]
+
+        if missing_features:
+
+            st.error(
+                "❌ Invalid CSV: required features are missing."
+            )
+
+            st.write("Missing features:")
+
+            st.code(
+                "\n".join(missing_features)
+            )
+
+            st.stop()
+
+
+        # Check for missing values.
+        if data[required_features].isnull().any().any():
+
+            st.error(
+                "❌ Invalid CSV: missing values detected "
+                "in the required features."
+            )
+
+            st.stop()
+
+
+        # Check for infinite values.
+        if not data[required_features].apply(
+            lambda column: pd.to_numeric(
+                column,
+                errors="coerce"
+            ).notna().all()
+        ).all():
+
+            st.error(
+                "❌ Invalid CSV: non-numeric values detected "
+                "in the required features."
+            )
+
+            st.stop()
+
+
+        # Successful validation.
+        st.success(
+            f"✅ Input validated successfully — "
+            f"{len(required_features)} required features detected."
+        )
         col1, col2 = st.columns(2)
 
         with col1:
